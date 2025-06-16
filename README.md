@@ -29,3 +29,24 @@ dornet new webapi -controllers -n API
 
 - Add new folder Data for DbContext
     A DbContext instance represents a session with the database and can be use to query and save instances of entyties.
+
+
+## Adding Bootstrap and Font-Awesome
+
+visit site - ngx-bootstrap
+
+User the Angular CLI for updating Angular project
+
+ng add ngx-bootstrap
+or
+npm install ngx-bootastrap@11 bootstrap font-awesome
+
+addin angular.json 
+
+```
+    "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/font-awesome/css/font-awesome.min.css",
+              "src/styles.css"
+            ],
+```

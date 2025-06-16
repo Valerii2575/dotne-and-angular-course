@@ -1,0 +1,13 @@
+<div class="content">
+  <h1>App is run</h1>
+<p>{{title}}</p>
+<ul>
+  <li *ngFor="let user of users">
+    <p>{{ user.id}}. {{user.userName}}</p>
+  </li>
+</ul>
+</div>
+
+<router-outlet>
+
+</router-outlet>
