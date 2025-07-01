@@ -1,13 +1,8 @@
-<div class="container">
-  <h1>App is run</h1>
-<p>{{title}}</p>
-<ul>
-  <li *ngFor="let user of users">
-    <p>{{ user.id}}. {{user.userName}}</p>
-  </li>
-</ul>
-</div>
+
+
+<app-nav></app-nav>
 
 <router-outlet>
+  <app-home></app-home>
 
 </router-outlet>
