@@ -24,7 +24,7 @@ export class RegisterComponent {
     console.log(this.model);
     this.accountService.register(this.model).subscribe({
       next: response => {
-        this.toastr.success(response.username);
+        this.toastr.success(response.userName);
         this.cancel();
       },
       error: error => this.toastr.error(error.error)

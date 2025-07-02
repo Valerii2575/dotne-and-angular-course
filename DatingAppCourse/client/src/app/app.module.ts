@@ -16,6 +16,7 @@ import { ListsComponent } from './lists/lists.component';
 import { MessagesComponent } from './messages/messages.component'
 import { RouterLinkActive } from '@angular/router';
 import { ToastrModule } from 'ngx-toastr';
+import { TitleCasePipe } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -36,6 +37,7 @@ import { ToastrModule } from 'ngx-toastr';
     BrowserAnimationsModule,
     BsDropdownModule,
     RouterLinkActive,
+    TitleCasePipe,
     ToastrModule.forRoot()
   ],
   providers: [],
