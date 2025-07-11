@@ -50,3 +50,20 @@ addin angular.json
               "src/styles.css"
             ],
 ```
+
+Install mkcert - is a simple tool for making localy-trusted development certificate.
+
+
+## Authentication Base
+
+- Update the user entity
+- Creating a base API controller
+- Creating an Account Controller with a register endpoint
+- Using DTO
+- Adding a login endpoint
+- JSON web tokens
+- Adding a token service
+- Adding the create token llogic
+- Creating a User DTO and returning the token
+- Adding the authentication midleware
+- Adding extension methods
