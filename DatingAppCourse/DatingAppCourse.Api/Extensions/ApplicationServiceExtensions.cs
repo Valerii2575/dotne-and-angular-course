@@ -1,4 +1,5 @@
 ﻿using DatingAppCourse.Api.Data;
+using DatingAppCourse.Api.Helper;
 using DatingAppCourse.Api.Interfaces;
 using DatingAppCourse.Api.Services;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,6 @@ namespace DatingAppCourse.Api.Extensions
         public static IServiceCollection AddApplicationServices(this IServiceCollection services,
             IConfiguration config)
         {
-
             services.AddControllers();
 
             services.AddDbContext<DataContext>(opt =>
@@ -31,6 +31,10 @@ namespace DatingAppCourse.Api.Extensions
             });
 
             services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            // Ensure AutoMapper is properly referenced
+           services.AddAutoMapper(typeof(AutoMapperProfiles));
 
             return services;
         }
