@@ -1,1 +1,15 @@
-<p>member-detail works!</p>
+<div class="row">
+  <div class="col-4">
+    <h2>{{member?.knownAs}}</h2>
+  </div>
+  <div class="col-8">
+    <tabset>
+    <tab heading="About {{member?.knownAs}}" id="tab1">
+      <h4>Description</h4>
+
+    </tab>
+    <tab heading="Basic Title 1">Basic content 1</tab>
+    <tab heading="Basic Title 2">Basic content 2</tab>
+  </tabset>
+  </div>
+</div>

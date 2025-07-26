@@ -1,37 +1,49 @@
-﻿using DatingAppCourse.Api.Data;
+﻿using AutoMapper;
+using DatingAppCourse.Api.DTOs;
 using DatingAppCourse.Api.Entities;
+using DatingAppCourse.Api.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DatingAppCourse.Api.Controllers
 {
-    public class UserController : BaseApiController
+    [Authorize]
+    public class UserController(IUserRepository userRepository, IMapper mapper) : BaseApiController
     {
-        private readonly DataContext _context;
-
-        public UserController(DataContext context)
-        {
-            _context = context;
-        }
-
         [HttpGet]
         [Route("users")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> Get()
+        public async Task<ActionResult<IEnumerable<MemberDto>>> Get()
         {
-            var users = await _context.Users.ToListAsync();
-            return Ok(users);
+            var users = await userRepository.GetUsersAsync();
+            var members = mapper.Map<IEnumerable<MemberDto>>(users);
+            return Ok(members);
         }
 
         [HttpGet]
-        [Route("users/{id}")]
-        public async Task<ActionResult<AppUser>> Get(int id)
+        [Route("users/{id:int}")]
+        public async Task<ActionResult<MemberDto>> GetById(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await userRepository.GetUserByIdAsync(id);
             if (user == null)
             {
                 return NotFound();
             }
-            return Ok(user);
+
+            var member = mapper.Map<MemberDto>(user);
+            return Ok(member);
+        }
+
+        [HttpGet]
+        [Route("users/byname/{userName}")]
+        public async Task<ActionResult<MemberDto>> GetByName(string userName)
+        {
+            var user = await userRepository.GetUserByUsernameAsync(userName);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var member = mapper.Map<MemberDto>(user);
+            return Ok(member);
         }
     }
 }

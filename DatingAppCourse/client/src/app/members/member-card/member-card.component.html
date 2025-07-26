@@ -1,0 +1,8 @@
+<div class="card" style="width: 18rem;">
+  <img *ngIf="member?.photoUrl" src="{{member?.photoUrl}}" class="card-img-top" alt="{{member?.knownAs}}">
+  <div class="card-body">
+    <h5 class="card-title">{{member?.knownAs}}</h5>
+    <p class="card-text">{{member?.country}}</p>
+    <a routerLink="/members/{{member?.userName}}" class="btn btn-primary">Look at</a>
+  </div>
+</div>

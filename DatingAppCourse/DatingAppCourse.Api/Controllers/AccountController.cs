@@ -55,26 +55,27 @@ namespace DatingAppCourse.Api.Controllers
                 return BadRequest("Username can only contain letters and digits");
             }
 
+            return Ok();
             // Registration logic goes here
-            using var hmac = new HMACSHA512();
+            //using var hmac = new HMACSHA512();
 
-            var user = new AppUser
-            {
-                UserName = registerDto.UserName,
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key
-            };
+            //var user = new AppUser
+            //{
+            //    UserName = registerDto.UserName,
+            //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
+            //    PasswordSalt = hmac.Key
+            //};
 
-            await context.Users.AddAsync(user);
-            await context.SaveChangesAsync();
+            //await context.Users.AddAsync(user);
+            //await context.SaveChangesAsync();
 
-            var userDto = new UserDto
-            {
-                UserName = user.UserName,
-                Token = tokenService.CreateToken(user)
-            };
+            //var userDto = new UserDto
+            //{
+            //    UserName = user.UserName,
+            //    Token = tokenService.CreateToken(user)
+            //};
 
-            return Ok(userDto);
+            //return Ok(userDto);
         }
 
         [HttpPost("login")]
