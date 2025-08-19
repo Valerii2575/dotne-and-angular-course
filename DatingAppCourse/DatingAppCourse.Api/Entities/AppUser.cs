@@ -1,14 +1,10 @@
 ﻿using DatingAppCourse.Api.Extensions;
+using Microsoft.AspNetCore.Identity;
 
 namespace DatingAppCourse.Api.Entities
 {
-    public class AppUser
+    public class AppUser : IdentityUser<int>
     {
-        public int Id { get; set; } 
-        public required string UserName { get; set; }
-        public byte[] PasswordHash { get; set; } = [];
-        public byte[] PasswordSalt { get; set; } = [];
-
         public DateOnly DateOfBirth { get; set; }
         public required string KnownAs { get; set; }
         public DateTime Created { get; set; } = DateTime.UtcNow;
@@ -20,6 +16,8 @@ namespace DatingAppCourse.Api.Entities
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
         public List<Photo> Photos { get; set; } = [];
+
+        public ICollection<AppUserRole> UserRoles { get; set; } = [];
 
         public int GetAge()
         {

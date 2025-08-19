@@ -1,7 +1,9 @@
 using DatingAppCourse.Api.Data;
+using DatingAppCourse.Api.Entities;
 using DatingAppCourse.Api.Extensions;
 using DatingAppCourse.Api.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -12,19 +14,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddApplicationServices(builder.Configuration);
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(options =>
-                    {
-                        var tokenKey = builder.Configuration["TokenKey"];
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuerSigningKey = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
-                            ValidateIssuer = false,
-                            ValidateAudience = false
-                        };
-                    });
-//builder.Services.AddIdentityServices(builder.Configuration);
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//                    .AddJwtBearer(options =>
+//                    {
+//                        var tokenKey = builder.Configuration["TokenKey"];
+//                        options.TokenValidationParameters = new TokenValidationParameters
+//                        {
+//                            ValidateIssuerSigningKey = true,
+//                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
+//                            ValidateIssuer = false,
+//                            ValidateAudience = false
+//                        };
+//                    });
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -56,8 +58,10 @@ var services = scope.ServiceProvider;
 try
 {
     var context = services.GetRequiredService<DataContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedUsers(context);
+    await Seed.SeedUsers(userManager, roleManager);
 }
 catch (Exception ex)
 {

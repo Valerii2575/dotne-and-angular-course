@@ -14,6 +14,7 @@ export interface Member {
   lookingFor: string;
   country: string;
   photos: Photo[];
+  roles: string[];
 }
 
 

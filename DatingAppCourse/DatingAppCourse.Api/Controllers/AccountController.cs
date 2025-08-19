@@ -2,15 +2,13 @@
 using DatingAppCourse.Api.DTOs;
 using DatingAppCourse.Api.Entities;
 using DatingAppCourse.Api.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Eventing.Reader;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace DatingAppCourse.Api.Controllers
 {
-    public class AccountController(DataContext context, ITokenService tokenService) : BaseApiController
+    public class AccountController(UserManager<AppUser> userManager, ITokenService tokenService) : BaseApiController
     {
         [HttpPost("register")]
         public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
@@ -55,27 +53,28 @@ namespace DatingAppCourse.Api.Controllers
                 return BadRequest("Username can only contain letters and digits");
             }
 
-            return Ok();
-            // Registration logic goes here
-            //using var hmac = new HMACSHA512();
+            var user = new AppUser
+            {
+                KnownAs = registerDto.UserName,
+                Gender = "",
+                UserName = registerDto.UserName,
 
-            //var user = new AppUser
-            //{
-            //    UserName = registerDto.UserName,
-            //    PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-            //    PasswordSalt = hmac.Key
-            //};
+            };
 
-            //await context.Users.AddAsync(user);
-            //await context.SaveChangesAsync();
+            var result = await userManager.CreateAsync(user, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description).ToList());
+            }
 
-            //var userDto = new UserDto
-            //{
-            //    UserName = user.UserName,
-            //    Token = tokenService.CreateToken(user)
-            //};
+            var userDto = new UserDto
+            {
+                UserName = user.UserName,
+                Token = await tokenService.CreateToken(user),
+                TokenExpiration = DateTime.UtcNow.AddDays(7) // Set token expiration to 7 days
+            };
 
-            //return Ok(userDto);
+            return Ok(userDto);
         }
 
         [HttpPost("login")]
@@ -91,26 +90,24 @@ namespace DatingAppCourse.Api.Controllers
                 return BadRequest("Username and password are required");
             }
             // Check if the user exists
-            var user = await context.Users.SingleOrDefaultAsync(x => x.UserName.ToLower() == loginDto.UserName.ToLower());
+            var user = await userManager.Users.FirstOrDefaultAsync(x => x.NormalizedUserName == loginDto.UserName.ToUpper());
             if (user == null)
             {
                 return Unauthorized("Invalid username or password");
             }
-            // Verify the password
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDto.Password));
-            for (int i = 0; i < computedHash.Length; i++)
+
+            var result = await userManager.CheckPasswordAsync(user, loginDto.Password);
+            if (!result)
             {
-                if (computedHash[i] != user.PasswordHash[i])
-                {
-                    return Unauthorized("Invalid username or password");
-                }
+                return Unauthorized("Invalid username or password");
             }
+
 
             var userDto = new UserDto
             {
                 UserName = user.UserName,
-                Token = tokenService.CreateToken(user)
+                Token = await tokenService.CreateToken(user),
+                TokenExpiration = DateTime.UtcNow.AddDays(7)
             };
 
             return Ok(userDto);
@@ -118,7 +115,7 @@ namespace DatingAppCourse.Api.Controllers
 
         private async Task<bool> UserExist(string userName)
         {
-            return await context.Users.AnyAsync(x => x.UserName.ToLower() == userName.ToLower());
+            return await userManager.Users.AnyAsync(x => x.NormalizedUserName == userName.ToUpper());
         }
     }
 }

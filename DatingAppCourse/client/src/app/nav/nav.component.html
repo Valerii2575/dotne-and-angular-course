@@ -16,6 +16,9 @@
          <li class="nav-item">
           <a class="nav-link" routerLink="errors" routerLinkActive="errors">Errors</a>
         </li>
+        <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
+          <a class="nav-link" routerLink="admin" routerLinkActive="admin">Admin</a>
+        </li>
       </ng-container>
     </ul>
     <form #loginForm="ngForm" (ngSubmit)="login()" class="d-flex" autocomplete="off" *ngIf="!accountService.currentUser()">

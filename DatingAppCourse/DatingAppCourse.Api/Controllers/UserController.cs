@@ -10,6 +10,7 @@ namespace DatingAppCourse.Api.Controllers
     [Authorize]
     public class UserController(IUserRepository userRepository, IMapper mapper) : BaseApiController
     {
+        [Authorize(Roles = "Manager, Moderator")]
         [HttpGet]
         [Route("users")]
         public async Task<ActionResult<IEnumerable<MemberDto>>> Get()

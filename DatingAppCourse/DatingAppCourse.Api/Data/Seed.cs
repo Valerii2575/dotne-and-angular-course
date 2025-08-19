@@ -1,4 +1,5 @@
 ﻿using DatingAppCourse.Api.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 
@@ -6,9 +7,11 @@ namespace DatingAppCourse.Api.Data
 {
     public class Seed
     {
-        public static async Task SeedUsers(DataContext context)
+        public static async Task SeedUsers(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
-            if (await context.Users.AnyAsync()) return; // Check if users already exist
+            if (await userManager.Users.AnyAsync()) return; // Check if users already exist
+
+
             var users = new List<AppUser>
             {
                 new AppUser
@@ -31,16 +34,51 @@ namespace DatingAppCourse.Api.Data
                 }
             };
 
+            var roles = new List<AppRole>
+            {
+                new AppRole { Name = "Member" },
+                new AppRole { Name = "Admin" },
+                new AppRole { Name = "Moderator" }
+            };
+
+            foreach(var role in roles)
+            {
+                // Check if the role already exists
+                if (!await roleManager.RoleExistsAsync(role.Name))
+                {
+                    await roleManager.CreateAsync(role);
+                }
+            }
+
+
             // Hash passwords for the users
             using var hmac = new HMACSHA512();
             foreach (var user in users)
             {
-                user.UserName = user.UserName.ToLower(); // Ensure usernames are lowercase
-                user.PasswordSalt = hmac.Key;
-                user.PasswordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Pa$$w0rd")); // Example password
+                await userManager.CreateAsync(user, "Pa$$word123!");
+                // Assign the "Member" role to all users
+                if (!await userManager.IsInRoleAsync(user, "Member"))
+                {
+                    await userManager.AddToRoleAsync(user, "Member");
+                }
             }
-            await context.Users.AddRangeAsync(users);
-            await context.SaveChangesAsync();
+
+            // Assign specific roles to users
+            var admin = new AppUser
+            {
+                UserName = "admin",
+                DateOfBirth = new DateOnly(1992, 2, 2),
+                KnownAs = "Admin",
+                Created = DateTime.UtcNow,
+                LastActive = DateTime.UtcNow,
+                Gender = "male"
+            };
+
+            await userManager.CreateAsync(admin, "AdminPa$$word123!");
+            if (!await userManager.IsInRoleAsync(admin, "Admin"))
+            {
+                await userManager.AddToRolesAsync(admin, ["Admin", "Moderator"]);
+            }
         }
     }
 }
